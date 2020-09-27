@@ -6,6 +6,7 @@ import shutil
 import subprocess
 import sys
 from pathlib import Path
+from platform import system
 from zipfile import ZipFile
 
 
@@ -44,7 +45,19 @@ def extract_zip(path):
     """Zip 확장자 파일의 압축을 푼다."""
     folder_tmp = get_outfolder_tmp(path)
     with ZipFile(path, 'r') as zf:
-        zf.extractall(folder_tmp)
+        for zinfo in zf.infolist():
+            is_encrypted = zinfo.flag_bits & 0x1 
+            break
+
+    with ZipFile(path, 'r') as zf:
+        if is_encrypted:
+            password = input("Input password: ")
+            if system() == "Windows":
+                zf.extractall(folder_tmp, pwd=bytes(password, 'euc-kr'))
+            else:
+                zf.extractall(folder_tmp, pwd=bytes(password, 'utf-8'))
+        else:
+            zf.extractall(folder_tmp)
 
     move_output(path)
 
