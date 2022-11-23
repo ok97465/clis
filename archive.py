@@ -1,3 +1,5 @@
+"""Archive files."""
+# %% Import
 import sys
 from pathlib import Path
 import os.path as osp
